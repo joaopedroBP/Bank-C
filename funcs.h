@@ -1,0 +1,2 @@
+int escolha;
+void menu();
