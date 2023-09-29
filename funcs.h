@@ -7,7 +7,7 @@ typedef struct{
 }cliente;
 
 typedef struct{
-    cliente clientes;
+    cliente clientes[1000];
     int qtd;
 }clientes;
 
@@ -17,8 +17,9 @@ typedef struct{
 
 }extrato;
 
-
+void entrada(char *txt, char *str,  int tamanho);
 
 
 int escolha;
 void menu();
+int newclient(clientes *cls);
