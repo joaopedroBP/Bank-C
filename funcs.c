@@ -98,5 +98,23 @@ int saveclients(clientes *cls, char nome[]){
     fclose(f);
 }
 
+int listclients(clientes cls){
+    if(cls.qtd == 0){
+        printf("nenhum cliente cadastrado\n");
+        return 1;
+    }
+
+    printf("\nclientes cadastrados: \n\n");
+    
+    for(int i = 0; i < cls.qtd ; i++){
+        printf("Numero do cliente: %d\n", i + 1);
+        printf("Nome: %s", cls.clientes[i].nome);
+        printf("CPF: %s", cls.clientes[i].CPF);
+        printf("Tipo de conta: %s\n", cls.clientes[i].conta);
+    }
+
+    printf("\n");
+    return 0;
+}
 
 
