@@ -26,3 +26,4 @@ int newclient(clientes *cls);
 void clearbuffer();
 int saveclients(clientes *cls, char nome[]);
 int lerclientes(clientes *cls, char nome[]);
+int listclients(clientes cls);
