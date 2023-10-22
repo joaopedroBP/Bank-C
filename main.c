@@ -23,6 +23,14 @@ int main(){
             case 3:
                 listclients(cls);
                 break;
+            case 4:
+                int pos = securityCheck(cls);
+                if(pos != -1){
+                    deposito(cls,pos);
+                }else{
+                    printf("CPF ou senha invalidos\n");
+                }
+                break;
             case 8:
                 T++; 
                 break;
