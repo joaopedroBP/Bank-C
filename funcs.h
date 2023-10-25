@@ -26,6 +26,7 @@ int saveclients(clientes *cls, char nome[]);
 int lerclientes(clientes *cls, char nome[]);
 int listclients(clientes cls);
 int securityCheck(clientes cls);
-int accountCheck(clientes cls);
+int accountCheck(clientes cls,int position);
 int deposito(clientes cls,int pos);
 int chartoint(char *txt);
+int debito(clientes cls, int local);
