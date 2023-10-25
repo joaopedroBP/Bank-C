@@ -31,7 +31,28 @@ int main(){
                     printf("CPF ou senha invalidos\n");
                 }
                 break;
+            case 5:
+                int loc = securityCheck(cls);
+                if(loc != -1){
+                    debito(cls,loc);
+                }else{
+                    printf("CPF ou senha invalidos\n");
+                }
+                break;
             case 8:
+                T++; 
+                break;
+        }
+    }
+
+    cod = saveclients(&cls,"clientes.bin");
+    if(cod == 1){
+        printf("falha ao salvar dados");
+    }else{
+        printf("Dados salvos com exito, obrgado por usar os nossos serviços");
+    }
+    return 0;
+}            case 8:
                 T++; 
                 break;
         }
