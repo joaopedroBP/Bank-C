@@ -4,15 +4,17 @@
 #include <string.h>
 
 void menu(){
-    printf("bem vindo ao banco 'Quem poupa tem'!\n");
-    printf("1: Cadastrar novo cliente.\n"
-    "2:Deletar conta.\n"
-    "3:Listar clientes.\n"
-    "4:Debitar.\n"
-    "5:Depositar.\n"
-    "6:Extrato\n"
-    "7:Transferencia entre contas\n"
-    "8:Salvar Dados e sair.\n");
+    printf("\nbem vindo ao banco 'Quem poupa tem'!\n");
+    printf("1 - Cadastrar novo cliente.\n"
+    "2 - Deletar conta.\n"
+    "3 - Listar clientes.\n"
+    "4 - Depositar.\n"
+    "5 - Debitar.\n"
+    "6 - Extrato\n"
+    "7 - Transferencia entre contas\n"
+    "8 - Salvar Dados e sair.\n\n");
+    printf("Qual a sua escolha?: ");
+    printf("\n\n==========================\n\n");
 }
 
 int lerclientes(clientes *cls, char nome[]){
@@ -92,7 +94,8 @@ int newclient(clientes *cls){
         break;
     }
 
-    cls->qtd += 1;  
+    cls->qtd += 1; 
+    printf("\n\n==========================\n\n");
     return 0;
 }
 
@@ -108,6 +111,7 @@ int saveclients(clientes *cls, char nome[]){
 }
 
 int listclients(clientes cls){
+    
     if(cls.qtd == 0){
         printf("nenhum cliente cadastrado\n");
         return 1;
@@ -115,50 +119,155 @@ int listclients(clientes cls){
 
     printf("\nclientes cadastrados: \n\n");
     
-    for(int i = 0; i < cls.qtd ; i++){
-        printf("Numero do cliente: %d\n", i + 1);
-        printf("Nome: %s", cls.clientes[i].nome);
-        printf("CPF: %s", cls.clientes[i].CPF);
-        printf("Tipo de conta: %s", cls.clientes[i].conta);
-        printf("Senha: %s",cls.clientes[i].senha);
+    for(int i = 0; i < cls.qtd ;i++){
+        printf("Numero do cliente - %d\n",i + 1);
+        printf("Nome - %s", cls.clientes[i].nome);
+        printf("CPF - %s",cls.clientes[i].CPF);
+        printf("Valor - %f\n",cls.clientes[i].valor);
+        printf("\n\n");
     }
 
-    printf("\n");
+    printf("\n\n==========================\n\n");
+    
     return 0;
 }
 
-int securityCheck(clientes cls){
+int securityCheck(clientes *cls){
     char str[500];
     char CPF[500];
-    char senha[100];
-
+    char senha[200];
     while(1){
         clearbuffer();
-        entrada("Qual o CPF vinculado a sua conta?: ",str,500);
+        entrada("Qual o CPF vinculado a sua conta?",str,500);
         strcpy(CPF,str);
 
-        entrada("Qual a senha da sua conta?: ",str,500);
+        entrada("Qual a senha da sua conta?",str,500);
         strcpy(senha,str);
-
         break;
     }
-
-    for(int i = 0; i < cls.qtd; i++){
-        if(strcmp(cls.clientes[i].CPF, CPF) == 0 && strcmp(cls.clientes[i].senha, senha) == 0){
-            return i; // retorna o indice/posição do cliente na struct de clientes caso os valores batam
+    
+    for(int i = 0; i < cls->qtd; i++){
+        if(strcmp(cls->clientes[i].CPF,CPF) == 0 && strcmp(cls->clientes[i].senha,senha) == 0){
+            return i;
         }
-
     }
 
-        
     return -1;
 }
 
-int deposito(clientes cls, int pos){
-    char str[200];;
-    entrada("digite o valor que dejesa depositar em sua conta: ",str,500);
-    cls.clientes[pos].valor += chartofloat(str);
-    printf("Deposito realizada com sucesso! o valor depostido em sua conta agora é de %.2f R$\n\n",cls.clientes[pos].valor);
+int accountCheck(clientes *cls, int pos ){
+    if(cls->clientes[pos].conta == 1){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int deposito(clientes *cls, int pos){
+    char str[500];
+    entrada("Qual o valor que dejesa depositar na sua conta?: ",str,500);
+    cls->clientes[pos].valor += chartofloat(str);
+    printf("o valor da sua conta agora é %f",cls->clientes[pos].valor);
+    printf("\n\n==========================\n\n");
     return 0;
+}
+
+int debito(clientes *cls, int loc){
+    char str[500];
+    float taxa;
+    float limite;
+
+    int conta = accountCheck(cls,loc);
+
+    if(conta == 1){
+        taxa = 0.03;
+        limite = -5000;
+    }else{
+        taxa = 0.05;
+        limite = -1000;
+    }
+
+    entrada("Qual o valor que dejesa debitar da sua conta?: ",str,500);
+
+    float Nvalor = cls->clientes[loc].valor - (chartofloat(str) + (chartofloat(str) * taxa));
+    if(Nvalor >= limite){
+        cls->clientes[loc].valor = Nvalor;
+        printf("\n\n==========================\n\n");
+        return 1;
+    }else{
+        printf("Valor debitado excede o limite da conta!");
+        printf("\n\n==========================\n\n");
+        return 0;
+    }
+
+
+}
+
+int transf(clientes*cls, int lug){
+    char str[500];
+    float taxa;
+    float limite;
+
+    int conta = accountCheck(cls,lug);
+
+    if(conta == 1){
+        taxa = 0.03;
+        limite = -5000;
+    }else{
+        taxa = 0.05;
+        limite = -1000;
+    }
+
+    printf("Certo, dados confirmados, aperte enter para entrar com os dados do receptor!");
+    int lug2 = securityCheck(cls);
+
+    if(lug2 == -1){
+        printf("CPF ou senha do recptor incorretos!");
+        return 0;
+    }
+    else{
+        entrada("Qual valor você dejesa depositar na outra conta?: ",str,500);
+        float Nvalor = cls->clientes[lug].valor - (chartofloat(str) + (chartofloat(str) * taxa));
+        float Nvalor2 = chartofloat(str);
+        if(Nvalor >= limite){
+            cls->clientes[lug].valor = Nvalor;
+            cls->clientes[lug2].valor += Nvalor2;
+            printf("Trasnferência realizda com exito!");
+            printf("\n\n==========================\n\n");
+            return 1;
+        }else{
+            printf("Valor debitado exede o limite da conta, transferência cancelada");
+            printf("\n\n==========================\n\n");
+            return 0;
+        }
+
+    }
+}
+
+int deletarConta(clientes*cls, int plc){
+    int indice = plc;
+    char  str[500];
+
+    entrada("Essa conta sera deletada permanentemente, tem certeza que dejsesa fazer isso?\nse sim digite 1, se não digite 0",str,500);
+
+    if(chartoint(str) == 0){
+        printf("Operação cancelada!");
+        printf("\n\n==========================\n\n");
+        return 0;
+    }else if(chartoint(str) == 1){
+        for(;indice < cls->qtd;indice++){
+            strcpy(cls->clientes[indice].nome,cls->clientes[indice + 1].nome);
+            strcpy(cls->clientes[indice].CPF,cls->clientes[indice + 1].CPF);
+            cls->clientes[indice].conta = cls->clientes[indice + 1].conta;
+            cls->clientes[indice].valor = cls->clientes[indice + 1].valor;
+            strcpy(cls->clientes[indice].senha , cls->clientes[indice + 1].senha);
+        }
+
+        printf("\nConta deletada com sucesso!\n");
+        printf("\n\n==========================\n\n");
+
+        cls->qtd--;
+        return 1;
+    }
     
 }
