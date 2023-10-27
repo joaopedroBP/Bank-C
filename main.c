@@ -20,15 +20,39 @@ int main(){
             case 1:
                 newclient(&cls);
                 break;
+            case 2:
+                int place = securityCheck(&cls);
+                if(place != -1){
+                    deletarConta(&cls,place);
+                }else{
+                    printf("CPF ou senha invalidos!");
+                }
+                break;
             case 3:
                 listclients(cls);
                 break;
             case 4:
-                int pos = securityCheck(cls);
+                int pos = securityCheck(&cls);
                 if(pos != -1){
-                    deposito(cls,pos);
+                    deposito(&cls,pos);
                 }else{
-                    printf("CPF ou senha invalidos\n");
+                    printf("CPF ou senha invalidos!");
+                }
+                break;
+            case 5:
+                int local = securityCheck(&cls);
+                if(local != -1){
+                    debito(&cls,local);
+                }else{
+                    printf("CPF ou senha invalidos!");
+                }
+                break;
+            case 7:
+                int lugar = securityCheck(&cls);
+                if(lugar != -1){
+                    transf(&cls,lugar);
+                }else{
+                    printf("CPF ou senha incorretos!");
                 }
                 break;
             case 8:
