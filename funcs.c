@@ -3,7 +3,8 @@
 #include "funcs.h"
 #include <string.h>
 
-void menu(){
+int menu(){ // função que imprime o menu para o usuario e recebe-retorna sua escolha de opção;
+    int escolha;
     printf("\nbem vindo ao banco 'Quem poupa tem'!\n");
     printf("1 - Cadastrar novo cliente.\n"
     "2 - Deletar conta.\n"
@@ -13,16 +14,18 @@ void menu(){
     "6 - Extrato\n"
     "7 - Transferencia entre contas\n"
     "8 - Salvar Dados e sair.\n\n");
-    printf("Qual a sua escolha?: ");
+    printf("Qual a sua escolha?:");
+    scanf("%d",&escolha);
     printf("\n\n==========================\n\n");
+    return escolha;
 }
 
-int lerclientes(clientes *cls, char nome[]){
+int lerclientes(clientes *cls, char nome[]){//função que checa se existe ou não um arquivo que contem os clientes.
     FILE *f = fopen(nome, "rb");
     if(f == NULL){
         return 1;
     }
-
+    // se o arquivo existir ela le todas as inforamções presentes nele.
     fread(cls,sizeof(clientes),1,f);
 
     fclose(f);
@@ -31,14 +34,15 @@ int lerclientes(clientes *cls, char nome[]){
 }
 
 
-void entrada(char *txt, char *str, int tamanho){
+void entrada(char *txt, char *str, int tamanho){// função que rebe um entrada do usuario; 
     printf("%s\n",txt);
     strcpy(str,"");
     fgets(str,tamanho,stdin);
     printf("");
 }
 
-int chartoint(char *txt){
+int chartoint(char *txt){ // função que trasnforma um char singular em um int.
+//usada em apenas alguns casos especificos. 
     int num;
     num = atoi(txt);
     return num;
@@ -46,14 +50,15 @@ int chartoint(char *txt){
 
 
 
-void clearbuffer() {
+void clearbuffer(){
+    // função criada para limpar o buffer entre fget's
     int c = getchar();
 
     while (c != '\n' && c != EOF)
         c = getchar();
 }
 
-int chartofloat(char *txt){
+float chartofloat(char *txt){ // função que converte um char para um float e o retorna.
     float num;
     int contador = 0;
     for(int i = 0; i < strlen(txt); i++){
@@ -62,11 +67,10 @@ int chartofloat(char *txt){
         }
     }
     num = atof(txt);
-    // contar toda as virgulas e usar um for para subistituir apenas a da casa decimal(se der tempo de fazer isso);
     return num;
 }
 
-int newclient(clientes *cls){
+int newclient(clientes *cls){// função que cria um novo cliente.
     char str[200];
     if(cls->qtd == 1000){
         printf("limite de contas atingido");
@@ -88,18 +92,26 @@ int newclient(clientes *cls){
         entrada("Qual sera a senha da sua conta?: ",str,500);
         strcpy(cls->clientes[cls->qtd].senha,str);
 
-        entrada("Qual ser ao valor inicial da sua conta?: ",str,500);
+        entrada("Qual ser ao valor inicial da sua conta?separe apenas os valores decimais e use '.' para faze-lo: ",str,500);
         cls->clientes[cls->qtd].valor = chartofloat(str);
 
         break;
     }
 
+    char *sinal = "+";
+    strcpy(cls->clientes[cls->qtd].extr[cls->clientes[cls->qtd].eqtd].sinal,sinal);
+    cls->clientes[cls->qtd].extr[cls->clientes[cls->qtd].eqtd].valor = cls->clientes[cls->qtd].valor;
+
+
+    cls->clientes[cls->qtd].eqtd += 1;
     cls->qtd += 1; 
+
+    printf("Conta criada com exito,seja bem vindo ao nosso banco!");
     printf("\n\n==========================\n\n");
     return 0;
 }
 
-int saveclients(clientes *cls, char nome[]){
+int saveclients(clientes *cls, char nome[]){// função que informações modificadas/criadas ao longo do programa a um arquivo binario.
     FILE *f = fopen(nome,"wb");
 
     if(f == NULL){
@@ -110,9 +122,9 @@ int saveclients(clientes *cls, char nome[]){
     fclose(f);
 }
 
-int listclients(clientes cls){
+int listclients(clientes cls){// função que lista todos os clientes criados.
     
-    if(cls.qtd == 0){
+    if(cls.qtd == 0){ // se não há clientes ela retorna 1;
         printf("nenhum cliente cadastrado\n");
         return 1;
     }
@@ -125,6 +137,7 @@ int listclients(clientes cls){
         printf("CPF - %s",cls.clientes[i].CPF);
         printf("Valor - %f\n",cls.clientes[i].valor);
         printf("\n\n");
+
     }
 
     printf("\n\n==========================\n\n");
@@ -132,7 +145,7 @@ int listclients(clientes cls){
     return 0;
 }
 
-int securityCheck(clientes *cls){
+int securityCheck(clientes *cls){// função usada pra checar se um CPF/Senha estão vinculados a alguma conta.
     char str[500];
     char CPF[500];
     char senha[200];
@@ -148,14 +161,14 @@ int securityCheck(clientes *cls){
     
     for(int i = 0; i < cls->qtd; i++){
         if(strcmp(cls->clientes[i].CPF,CPF) == 0 && strcmp(cls->clientes[i].senha,senha) == 0){
-            return i;
+            return i;//ele retorna a posição do cliente vinculado a esse CPF/senha 
         }
     }
 
-    return -1;
+    return -1;// retorna -1 caso não estajam vinculados a nenhuma conta;
 }
 
-int accountCheck(clientes *cls, int pos ){
+int accountCheck(clientes *cls, int pos ){//checa qual o tipo de conta um cliente tem;
     if(cls->clientes[pos].conta == 1){
         return 1;
     }else{
@@ -163,16 +176,24 @@ int accountCheck(clientes *cls, int pos ){
     }
 }
 
-int deposito(clientes *cls, int pos){
+int deposito(clientes *cls, int pos){//função para depositar uma quantia em sua conta;
     char str[500];
+    char *sinaldp = "+";
     entrada("Qual o valor que dejesa depositar na sua conta?: ",str,500);
     cls->clientes[pos].valor += chartofloat(str);
-    printf("o valor da sua conta agora é %f",cls->clientes[pos].valor);
+    printf("Deposito realizado com exito!");
+    strcpy(cls->clientes[pos].extr[cls->clientes[pos].eqtd].sinal,sinaldp);
+    cls->clientes[pos].extr[cls->clientes[pos].eqtd].valor = chartofloat(str);
+    cls->clientes[pos].eqtd += 1;
     printf("\n\n==========================\n\n");
+    if(cls->clientes[pos].eqtd == 101){
+        deletextr(cls,pos);
+    }
     return 0;
 }
 
-int debito(clientes *cls, int loc){
+int debito(clientes *cls, int loc){//função que permite debitar um valor da sua conta;
+    char *sinaldb = "-";
     char str[500];
     float taxa;
     float limite;
@@ -192,21 +213,29 @@ int debito(clientes *cls, int loc){
     float Nvalor = cls->clientes[loc].valor - (chartofloat(str) + (chartofloat(str) * taxa));
     if(Nvalor >= limite){
         cls->clientes[loc].valor = Nvalor;
+        printf("Devito realizado com exito!");
         printf("\n\n==========================\n\n");
+        strcpy(cls->clientes[loc].extr[cls->clientes[loc].eqtd].sinal,sinaldb);
+        cls->clientes[loc].extr[cls->clientes[loc].eqtd].valor = chartofloat(str) + (chartofloat(str) * taxa);
+        cls->clientes[loc].eqtd += 1;
+        if(cls->clientes[loc].eqtd == 101){
+            deletextr(cls,loc);
+        }
         return 1;
     }else{
         printf("Valor debitado excede o limite da conta!");
         printf("\n\n==========================\n\n");
         return 0;
     }
-
-
 }
 
-int transf(clientes*cls, int lug){
+int transf(clientes*cls, int lug){//função que permite transferir um valor de uma conta para a outra.
+    char *sinaltf = "+";
+    char *sinaltf2 = "-";
     char str[500];
     float taxa;
     float limite;
+
 
     int conta = accountCheck(cls,lug);
 
@@ -234,6 +263,18 @@ int transf(clientes*cls, int lug){
             cls->clientes[lug2].valor += Nvalor2;
             printf("Trasnferência realizda com exito!");
             printf("\n\n==========================\n\n");
+            strcpy(cls->clientes[lug].extr[cls->clientes[lug].eqtd].sinal,sinaltf2);
+            cls->clientes[lug].extr[cls->clientes[lug].eqtd].valor = chartofloat(str) + (chartofloat(str) * taxa);
+            cls->clientes[lug].eqtd += 1;
+            strcpy(cls->clientes[lug2].extr[cls->clientes[lug2].eqtd].sinal,sinaltf);
+            cls->clientes[lug2].extr[cls->clientes[lug2].eqtd].valor = chartofloat(str);
+            cls->clientes[lug2].eqtd += 1;
+            if(cls->clientes[lug].eqtd == 101){
+                deletextr(cls,lug);
+            }
+            if(cls->clientes[lug2].eqtd == 101){
+                deletextr(cls,lug2);
+            }
             return 1;
         }else{
             printf("Valor debitado exede o limite da conta, transferência cancelada");
@@ -244,7 +285,26 @@ int transf(clientes*cls, int lug){
     }
 }
 
-int deletarConta(clientes*cls, int plc){
+int deletextr(clientes *cls, int cpos) {// função que deleta o primeiro extrato de um cliente.Usada caso o limite seja exedido.
+    int pos = cpos;  
+    
+    if (cls->clientes[pos].eqtd > 0) {
+        for (int i = 0; i < cls->clientes[pos].eqtd - 1; i++) {
+            strcpy(cls->clientes[pos].extr[i].sinal, cls->clientes[pos].extr[i + 1].sinal);
+            cls->clientes[pos].extr[i].valor = cls->clientes[pos].extr[i + 1].valor;
+        }
+        
+        
+        cls->clientes[pos].eqtd--;
+        
+        return 0; 
+    } else {
+        
+        return -1;
+    }
+}
+
+int deletarConta(clientes*cls, int plc){// funlção que permite deletar uma conta existente;
     int indice = plc;
     char  str[500];
 
@@ -255,6 +315,7 @@ int deletarConta(clientes*cls, int plc){
         printf("\n\n==========================\n\n");
         return 0;
     }else if(chartoint(str) == 1){
+        deletextr(cls,plc);
         for(;indice < cls->qtd;indice++){
             strcpy(cls->clientes[indice].nome,cls->clientes[indice + 1].nome);
             strcpy(cls->clientes[indice].CPF,cls->clientes[indice + 1].CPF);
@@ -270,4 +331,35 @@ int deletarConta(clientes*cls, int plc){
         return 1;
     }
     
+}
+
+
+int showextr(clientes cls, int posext) {// função que cria um arquivo txt que mostra o extrato de um cliente.
+    FILE *f;
+    char filename[256];
+        snprintf(filename, sizeof(filename), "extrato_cliente_%s.txt", cls.clientes[posext].nome);
+
+        f = fopen(filename, "w");
+        
+        if (f == NULL) {
+            perror("Error opening file");
+            return -1;
+        }
+
+        fprintf(f, "Seu extrato\n\n\n");
+
+        for (int i = 0; i < cls.clientes[posext].eqtd; i++) {
+            fprintf(f, "%s", cls.clientes[posext].extr[i].sinal);
+            fprintf(f, "%f", cls.clientes[posext].extr[i].valor);
+            fprintf(f, "\n\n");
+        }
+
+        fclose(f);
+
+        printf("Um arquivo com seu extrato foi criado!\n");
+        printf("\n\n==========================\n\n");
+
+        return 0;
+    }
+    return -1;  
 }
