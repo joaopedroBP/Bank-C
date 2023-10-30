@@ -4,17 +4,17 @@
 
 int main(){
     clientes cls;
-    int cod = lerclientes(&cls, "clientes.bin");
+    int cod = lerclientes(&cls, "clientes.bin");// usa a lerclientes para checar se um arquivo exite
     if(cod == 1){
+        //seta as quantidades para 0 caso não exista;
         cls.qtd = 0;
+        cls.clientes[cls.qtd].eqtd = 0;
     }
 
     int escolha;
     int T = 0;
     while(T == 0){
-        menu();
-        printf("Qual a sua escolha?: ");
-        scanf("%d", &escolha);
+        escolha = menu();
 
         switch(escolha){
             case 1:
@@ -45,6 +45,14 @@ int main(){
                     debito(&cls,local);
                 }else{
                     printf("CPF ou senha invalidos!");
+                }
+                break;
+            case 6:
+                int posicao_extrato = securityCheck(&cls);
+                if(posicao_extrato != -1){
+                    showextr(cls,posicao_extrato);
+                }else{
+                    printf("CPF ou senha invalidos");
                 }
                 break;
             case 7:
