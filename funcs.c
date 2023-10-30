@@ -215,11 +215,13 @@ int debito(clientes *cls, int loc){//função que permite debitar um valor da su
         cls->clientes[loc].valor = Nvalor;
         printf("Devito realizado com exito!");
         printf("\n\n==========================\n\n");
+        //mundanças no extrato.
         strcpy(cls->clientes[loc].extr[cls->clientes[loc].eqtd].sinal,sinaldb);
         cls->clientes[loc].extr[cls->clientes[loc].eqtd].valor = chartofloat(str) + (chartofloat(str) * taxa);
         cls->clientes[loc].eqtd += 1;
+        
         if(cls->clientes[loc].eqtd == 101){
-            deletextr(cls,loc);
+            deletextr(cls,loc);//checa se o extrato exede o limite.
         }
         return 1;
     }else{
@@ -232,6 +234,7 @@ int debito(clientes *cls, int loc){//função que permite debitar um valor da su
 int transf(clientes*cls, int lug){//função que permite transferir um valor de uma conta para a outra.
     char *sinaltf = "+";
     char *sinaltf2 = "-";
+    
     char str[500];
     float taxa;
     float limite;
@@ -247,7 +250,8 @@ int transf(clientes*cls, int lug){//função que permite transferir um valor de 
         limite = -1000;
     }
 
-    printf("Certo, dados confirmados, aperte enter para entrar com os dados do receptor!");
+    printf("Certo, dados do doador confirmados, aperte enter para entrar com os dados do receptor!");
+    //este enter é necessário pois usar dois security checks acaba travandando o codigo, então fiz isso pra mascarar esse questão.
     int lug2 = securityCheck(cls);
 
     if(lug2 == -1){
@@ -256,24 +260,30 @@ int transf(clientes*cls, int lug){//função que permite transferir um valor de 
     }
     else{
         entrada("Qual valor você dejesa depositar na outra conta?: ",str,500);
+        
         float Nvalor = cls->clientes[lug].valor - (chartofloat(str) + (chartofloat(str) * taxa));
         float Nvalor2 = chartofloat(str);
+        
         if(Nvalor >= limite){
             cls->clientes[lug].valor = Nvalor;
             cls->clientes[lug2].valor += Nvalor2;
+            
             printf("Trasnferência realizda com exito!");
             printf("\n\n==========================\n\n");
+            //mudanças no extrato.
             strcpy(cls->clientes[lug].extr[cls->clientes[lug].eqtd].sinal,sinaltf2);
             cls->clientes[lug].extr[cls->clientes[lug].eqtd].valor = chartofloat(str) + (chartofloat(str) * taxa);
             cls->clientes[lug].eqtd += 1;
+            
             strcpy(cls->clientes[lug2].extr[cls->clientes[lug2].eqtd].sinal,sinaltf);
             cls->clientes[lug2].extr[cls->clientes[lug2].eqtd].valor = chartofloat(str);
-            cls->clientes[lug2].eqtd += 1;
+            cls->clientes[lug2].eqtd += 1
+                ;
             if(cls->clientes[lug].eqtd == 101){
-                deletextr(cls,lug);
+                deletextr(cls,lug);//checa se o extrato exede o limite.
             }
             if(cls->clientes[lug2].eqtd == 101){
-                deletextr(cls,lug2);
+                deletextr(cls,lug2);//checa se o extrato exede o limite.
             }
             return 1;
         }else{
