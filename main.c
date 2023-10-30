@@ -32,6 +32,7 @@ int main(){
                 listclients(cls);
                 break;
             case 4:
+                //São pedidos o CPF e senha por uma questão de padronização e praticidade.
                 int pos = securityCheck(&cls);
                 if(pos != -1){
                     deposito(&cls,pos);
