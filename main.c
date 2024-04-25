@@ -61,7 +61,7 @@ int main(){
                 if(lugar != -1){
                     transf(&cls,lugar);
                 }else{
-                    printf("CPF ou senha incorretos!");
+                    printf("CPF ou senha invalidos/incorretos!");
                 }
                 break;
             case 8:
